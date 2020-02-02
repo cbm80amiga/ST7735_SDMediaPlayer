@@ -3,7 +3,7 @@ SD File Browser and Viewer
 
 Smooth video playback from SD on STM32 and ST7735 1.8" 128x160 using DMA and fast SPI 36Mbps interface
 
-Achieved 41 fps using fast SD card
+Achieved 41 fps using fast SD card. 160x128 pixel JPEG images decoding takes 100 ms or less.
 
 YouTube videos:
 
@@ -59,7 +59,7 @@ https://www.youtube.com/watch?v=o3AqITHf0mo&list=PLxb1losWErZ6y6GombzvtwRZ2l7brP
 - SdFat library uses DMA for SPI transfer
 - Big buffer in RAM is used to speed up SPI/DMA transfer 
 - Developed and tested with stm32duino and Arduino IDE 1.6.5
-- Requires SdFat, Arduino_ST7735_STM, JpgDecode_STM and RREFont libraries and stm32duino
+- Requires Arduino_ST7735_STM, SdFat, JpgDecoder_STM and RREFont libraries and stm32duino
  
 If you find it useful and you want to buy me a coffee or a beer:
 
