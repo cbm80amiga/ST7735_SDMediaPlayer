@@ -49,7 +49,7 @@ https://www.youtube.com/watch?v=o3AqITHf0mo&list=PLxb1losWErZ6y6GombzvtwRZ2l7brP
 - RAW 160x128 video files supported @ 41fps
 - BMP pictures in 24-bit and 8/4-bit with palette
 - basic text files viewer
-- JPEG photos support (even high resolution) thanks to JpgDecode_STM
+- JPEG photos support (even high resolution) thanks to JpgDecode_STM library
 
 ## Comments:
 - SD uses faster STM32 SPI1 interface which supports 36 Mbps
@@ -59,7 +59,7 @@ https://www.youtube.com/watch?v=o3AqITHf0mo&list=PLxb1losWErZ6y6GombzvtwRZ2l7brP
 - SdFat library uses DMA for SPI transfer
 - Big buffer in RAM is used to speed up SPI/DMA transfer 
 - Developed and tested with stm32duino and Arduino IDE 1.6.5
-- Requires SdFat, Arduino_ST7735_STM and RREFont libraries and stm32duino
+- Requires SdFat, Arduino_ST7735_STM, JpgDecode_STM and RREFont libraries and stm32duino
  
 If you find it useful and you want to buy me a coffee or a beer:
 
