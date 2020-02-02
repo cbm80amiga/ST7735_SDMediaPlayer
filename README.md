@@ -9,8 +9,9 @@ YouTube videos:
 
 https://youtu.be/6Uh5Iu-erO0
 
-
 https://youtu.be/o3AqITHf0mo
+
+https://youtu.be/4PwaX-zusPM
 
 
 More ST7735 and STM32 videos:
@@ -48,6 +49,7 @@ https://www.youtube.com/watch?v=o3AqITHf0mo&list=PLxb1losWErZ6y6GombzvtwRZ2l7brP
 - RAW 160x128 video files supported @ 41fps
 - BMP pictures in 24-bit and 8/4-bit with palette
 - basic text files viewer
+- JPEG photos support (even high resolution) thanks to JpgDecode_STM
 
 ## Comments:
 - SD uses faster STM32 SPI1 interface which supports 36 Mbps
