@@ -3,7 +3,7 @@ SD File Browser and Viewer
 
 Smooth video playback from SD on STM32 and ST7735 1.8" 128x160 using DMA and fast SPI 36Mbps interface
 
-Achieved 41 fps using fast SD card. 160x128 pixel JPEG images decoding takes 100 ms or less.
+Achieved 41 fps using fast SD card. 160x128 pixel JPEG image decoding takes 100 ms or less.
 
 YouTube videos:
 
