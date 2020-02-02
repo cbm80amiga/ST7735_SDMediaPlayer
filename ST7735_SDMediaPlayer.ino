@@ -2,7 +2,10 @@
 // SD Media Player/File Viewer with File Browser
 // Requires SdFat, Arduino_ST7735_STM and RREFont libraries and stm32duino
 // (C)2019-20 Pawel A. Hernik
-// YouTube videos: https://youtu.be/6Uh5Iu-erO0 and https://youtu.be/o3AqITHf0mo 
+// YouTube videos:
+// https://youtu.be/6Uh5Iu-erO0
+// https://youtu.be/o3AqITHf0mo 
+// https://youtu.be/4PwaX-zusPM 
 
 /*
  ST7735 128x160 1.8" LCD pinout (header at the top, from left):
@@ -74,7 +77,7 @@ Arduino_ST7735 lcd = Arduino_ST7735(TFT_DC, TFT_RST, TFT_CS);
 
 #define NLINES 32
 #define BUF_WD 160
-uint16_t buf[BUF_WD*NLINES]; 
+uint16_t buf[BUF_WD*NLINES] __attribute__((aligned(4)));
 char txt[30];
 
 #include "RREFont.h"
@@ -104,20 +107,32 @@ SdFat sd(1);
 
 SdFile file;
 
-void lcdSPI()
-{
-  SPI.beginTransaction(SPISettings(36000000, MSBFIRST, SPI_MODE3, DATA_SIZE_16BIT));
-}
-
 // use 18 if your SD card doesn't work
 #define SD_SPEED 36
 //#define SD_SPEED 18
-void sdSPI()
+void sdSPI() { SPI.beginTransaction(SD_SCK_MHZ(SD_SPEED)); }
+void lcdSPI() { SPI.beginTransaction(SPISettings(36000000, MSBFIRST, SPI_MODE3, DATA_SIZE_16BIT)); }
+
+// -----------------------------------------------
+// Required for JPEG loading from SD card and rendering
+// define USE_SDFAT_LIBRARY in JpgDecoder_STM.h too
+
+#include <JpgDecoder_STM.h>
+
+// the callback function below renders decoded JPEG on the LCD
+bool renderLCD(int16_t x, int16_t y, uint16_t w, uint16_t h, uint16_t* bitmap)
 {
-  SPI.beginTransaction(SD_SCK_MHZ(SD_SPEED));
+  lcdSPI();
+  if(y>=lcd.height()) return 0; // 0 - to stop decoding
+  lcd.drawImage(x,y, w,h, bitmap);
+  return 1; // 1 - to decode next block
 }
 
-// ------------------------------------------------
+// align to a 32 bit boundary for the best performance
+#define DECODE_BUFFER_LEN 3100 
+//uint8_t decodeBuffer[DECODE_BUFFER_LEN] __attribute__((aligned(4)));
+JpgDecoder jpeg(renderLCD,(uint8_t*)buf,DECODE_BUFFER_LEN);
+// -----------------------------------------------
 #define BUTTON PB9
 int buttonState;
 int prevState = HIGH;
@@ -313,6 +328,24 @@ int showBMP(char *filename)
 }
 
 // --------------------------------------------------------------------------
+int showJPG(char *filename)
+{
+  uint16_t jwd,jht,sc=0;
+  jpeg.getDim(&jwd,&jht,filename);
+  if(2*jht/lcd.height()>=15) sc=3; else // 15/2
+  if(2*jht/lcd.height()>=7) sc=2; else  // 7/2
+  if(2*jht/lcd.height()>=3) sc=1;       // 3/2
+  int x=(lcd.width()-(jwd>>sc))/2;
+  int y=(lcd.height()-(jht>>sc))/2;
+  if(x<0) x=0;
+  if(y<0) y=0;
+  snprintf(txt,50,"%4d x %4d sc=%d [%s]",jwd,jht,sc,filename);
+  Serial.println(txt);
+  jpeg.show(x,y,filename,sc);
+  while(handleButton()==0 || prevButtonState!=0);
+  return 1;
+}
+// --------------------------------------------------------------------------
 int showTxt(char *filename)
 {
   sdSPI();
@@ -393,7 +426,8 @@ void fileList(int rewind=0)
       filesList[numScreenFiles][MAX_NAME_LEN] = 2;
       //Serial.println("/");
     } else {
-      if(checkExt(filesList[numScreenFiles],"raw") || checkExt(filesList[numScreenFiles],"txt") || checkExt(filesList[numScreenFiles],"bmp"))
+      if(checkExt(filesList[numScreenFiles],"raw") || checkExt(filesList[numScreenFiles],"txt") ||
+         checkExt(filesList[numScreenFiles],"bmp") || checkExt(filesList[numScreenFiles],"jpg"))
         filesList[numScreenFiles][MAX_NAME_LEN] = 1;
       else
         filesList[numScreenFiles][MAX_NAME_LEN] = 0;
@@ -452,6 +486,7 @@ void fileListShow()
     } else {
       font.setColor(filesList[i][MAX_NAME_LEN] ? WHITE : RGBto565(190,190,190)); 
       font.printStr(xs,ys+2+i*lineHt,filesList[i]);
+      font.setColor(RGBto565(230,230,230));
       font.printStr(lcd.width()-strlen(filesSize[i])*charWd+1,ys+2+i*lineHt,filesSize[i]);
     }
   }
@@ -464,6 +499,7 @@ int handleFile(char *filename)
   if(checkExt(filename,"raw")) return showVideo(filename, 160,128, 32,0); else
   if(checkExt(filename,"txt")) return showTxt(filename); else
   if(checkExt(filename,"bmp")) return showBMP(filename); else
+  if(checkExt(filename,"jpg")) return showJPG(filename); else
   return 0;
 }
 
