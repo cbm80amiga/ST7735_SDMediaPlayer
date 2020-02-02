@@ -1,6 +1,6 @@
 // ST7735 library example
 // SD Media Player/File Viewer with File Browser
-// Requires SdFat, Arduino_ST7735_STM and RREFont libraries and stm32duino
+// Requires Arduino_ST7735_STM, SdFat, JpgDecoder_STM, RREFont libraries and stm32duino
 // (C)2019-20 Pawel A. Hernik
 // YouTube videos:
 // https://youtu.be/6Uh5Iu-erO0
@@ -46,6 +46,7 @@
  - Long click to show file or exit the viewer
  - Semi-transparent progress bar
  - Long file names (up to 23 characters fit on the screen) and file size displayed
+ - Supported file types: RAW 565 video, BMP, JPEG, TXT (very simple)
 
  Comments:
  - SD uses faster STM32 SPI1 interface which supports 36 Mbps
@@ -54,6 +55,7 @@
  - Fast card at 36Mbps gives 41fps for 160x128 video
  - SdFat library uses DMA for SPI transfer
  - Big buffer in RAM is used to speed up SPI/DMA transfer
+ - fast JPEG decoding - for 160x128 pixel images - 100 ms or less
 */
 
 #include <SPI.h>
@@ -132,6 +134,7 @@ bool renderLCD(int16_t x, int16_t y, uint16_t w, uint16_t h, uint16_t* bitmap)
 #define DECODE_BUFFER_LEN 3100 
 //uint8_t decodeBuffer[DECODE_BUFFER_LEN] __attribute__((aligned(4)));
 JpgDecoder jpeg(renderLCD,(uint8_t*)buf,DECODE_BUFFER_LEN);
+
 // -----------------------------------------------
 #define BUTTON PB9
 int buttonState;
