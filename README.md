@@ -54,7 +54,7 @@ https://www.youtube.com/watch?v=o3AqITHf0mo&list=PLxb1losWErZ6y6GombzvtwRZ2l7brP
 ## Comments:
 - SD uses faster STM32 SPI1 interface which supports 36 Mbps
 - SPI1 is shared between LCD and SD card
-- Not all SD cards work at 36MBps
+- Not all SD cards work at 36Mbps
 - Fast card at 36Mbps gives 41fps for 160x128 video
 - SdFat library uses DMA for SPI transfer
 - Big buffer in RAM is used to speed up SPI/DMA transfer 
